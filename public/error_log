@@ -1,0 +1,49 @@
+[29-Dec-2024 03:57:11 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/chitwangym-gaindakot.nexis.com.np/bootstrap/app.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php on line 16
+[04-Jan-2025 11:28:55 UTC] PHP Warning:  require_once(/home/krishnac/chitwangym-gaindakot.nexis.com.np/public/../bootstrap/app.php): Failed to open stream: No such file or directory in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php on line 16
+[04-Jan-2025 11:28:55 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/chitwangym-gaindakot.nexis.com.np/public/../bootstrap/app.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php on line 16
+[04-Jan-2025 11:28:55 UTC] PHP Warning:  require_once(/home/krishnac/chitwangym-gaindakot.nexis.com.np/public/../bootstrap/app.php): Failed to open stream: No such file or directory in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php on line 16
+[04-Jan-2025 11:28:55 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/chitwangym-gaindakot.nexis.com.np/public/../bootstrap/app.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php on line 16
+[04-Jan-2025 11:28:58 UTC] PHP Warning:  require_once(/home/krishnac/chitwangym-gaindakot.nexis.com.np/public/../bootstrap/app.php): Failed to open stream: No such file or directory in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php on line 16
+[04-Jan-2025 11:28:58 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/chitwangym-gaindakot.nexis.com.np/public/../bootstrap/app.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php on line 16
+[04-Jan-2025 11:29:00 UTC] PHP Warning:  require_once(/home/krishnac/chitwangym-gaindakot.nexis.com.np/public/../bootstrap/app.php): Failed to open stream: No such file or directory in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php on line 16
+[04-Jan-2025 11:29:00 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/chitwangym-gaindakot.nexis.com.np/public/../bootstrap/app.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/chitwangym-gaindakot.nexis.com.np/public/index.php on line 16
+[15-Jan-2025 16:21:40 UTC] PHP Warning:  require(/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
+[15-Jan-2025 16:21:40 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/demo.nexis.com.np/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
+[15-Jan-2025 16:24:07 UTC] PHP Warning:  require(/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
+[15-Jan-2025 16:24:07 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/demo.nexis.com.np/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
+[15-Jan-2025 16:24:10 UTC] PHP Warning:  require(/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
+[15-Jan-2025 16:24:10 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/demo.nexis.com.np/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
+[15-Jan-2025 16:26:09 UTC] PHP Warning:  require(/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
+[15-Jan-2025 16:26:09 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/demo.nexis.com.np/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
+[15-Jan-2025 16:27:41 UTC] PHP Warning:  require(/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
+[15-Jan-2025 16:27:41 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/krishnac/demo.nexis.com.np/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home/krishnac/demo.nexis.com.np/public/index.php:13
+Stack trace:
+#0 {main}
+  thrown in /home/krishnac/demo.nexis.com.np/public/index.php on line 13
