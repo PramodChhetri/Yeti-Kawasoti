@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +49,7 @@ class TransactionSeeder extends Seeder
                     'description' => null,
                     'total_amount' => $rowData['amount'],
                     'paid_amount' => $rowData['amount'],
-                    'payment_date' => $rowData['payment_date'],
+                    'payment_date' => Carbon::parse($rowData['payment_date'])->format('Y-m-d'),
                     'payment_mode' => $rowData['payment_mode'],
                     'bill_number' => $rowData['bill_number'],
                     'remarks' => null,

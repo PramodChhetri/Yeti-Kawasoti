@@ -498,7 +498,7 @@ class MemberController extends Controller
     public static function addCard(Request $request, string $id)
     {
         $data = $request->validate([
-            'card_number' => 'required|numeric',
+            'card_number' => 'required|numeric|unique:members,card_number',
         ]);
 
         $device = AccessControl::first();
@@ -531,11 +531,13 @@ class MemberController extends Controller
                 return redirect()->back()->with('message', 'Card added successfully');
             } else {
                 Log::error("Failed to add card for member ID {$id}, Response: " . $response->body());
-                return redirect()->back()->with('error', 'Failed to add card')->withStatus($response->status());
+                return redirect()->back()->withErrors([
+                    'error' => 'Failed to add card. Please check the card number and try again.',
+                ])->withStatus(400);
             }
         } catch (\Exception $e) {
             Log::error("Failed to add card for member ID {$id}, Error: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Unexpected error occurred')->withStatus(500);
+            return redirect()->back()->with('error', 'Unexpected error occurred')->withStatus(400);
         }
     }
 

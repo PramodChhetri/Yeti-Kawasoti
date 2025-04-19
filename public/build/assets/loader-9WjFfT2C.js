@@ -1,1 +1,0 @@
-import{j as e}from"./app-DxhgH9la.js";const d=({size:r="md"})=>{const s=r==="lg"?"h-12 w-12":r==="md"?"h-8 w-8":"h-6 w-6";return e.jsx("div",{className:`animate-spin rounded-full border-t-4 border-blue-500 border-solid ${s}`})};export{d as L};

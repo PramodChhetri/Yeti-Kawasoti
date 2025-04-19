@@ -229,9 +229,9 @@ export function ViewMemberDialog({
                                         <span className="font-semibold text-muted-foreground mr-2">
                                             Card Number:
                                         </span>
-                                        <span className="text-card-foreground">
+                                        <Badge variant="default">
                                             {member.card_number}
-                                        </span>
+                                        </Badge>
                                     </div>
                                 </CardContent>
                             </Card>

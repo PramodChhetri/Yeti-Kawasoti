@@ -38,6 +38,21 @@ export default function AddCardDialog({
                 });
                 setData("card_number", "");
             },
+            onError: (error: any) => {
+                // Check if error.response is available and handle accordingly
+                if (error.error) {
+                    toast({
+                        variant: "destructive",
+                        description: error.error || "Error adding card.",
+                    });
+                } else {
+                    toast({
+                        variant: "destructive",
+                        description:
+                            "Error adding card... Please try again later.",
+                    });
+                }
+            },
         });
     };
 

@@ -125,7 +125,7 @@ class MessageService
         $phone = $member->phone;
         $credit = $member->credit;
 
-        $message = "Dear $name,\n\nWe hope you're enjoying your fitness journey with us. This is a friendly reminder that your current outstanding balance of Rs $credit is due for payment. We kindly request you to clear your credit balance at your earliest convenience to continue enjoying uninterrupted access to our services.\n\nIf you have any questions or need assistance, please don't hesitate to contact us.\n\nThank you for being a valued member of " . config('app.gym_name') . ".\n\nBest regards,\nThe " . config('app.gym_name') . " Team";
+        $message = "Dear $name,\n\nThis is a reminder that your credit of Rs $credit is due. Kindly clear it at your earliest convenience to continue using our services.\n\nFor any questions, feel free to contact us.\n\nThank you for being a valued member of " . config('app.gym_name') . ".\n\nBest regards,\nThe " . config('app.gym_name') . " Team";
 
         return self::sendMessage([$phone], $message);
     }

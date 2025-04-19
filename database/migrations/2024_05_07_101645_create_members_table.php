@@ -33,7 +33,6 @@ return new class extends Migration
             $table->text("remarks")->nullable();
             $table->string('emergency_person_name')->nullable();
             $table->string('emergency_person_phone')->nullable();
-            $table->string('card_number')->nullable();
             $table->integer('balance')->default(0);
             $table->timestamps();
             $table->boolean("on_device")->default(false);
