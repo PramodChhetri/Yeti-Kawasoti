@@ -13,7 +13,7 @@ class MembersTableSeeder extends Seeder
     public function run()
     {
         // Path to the CSV file
-        $filePath = public_path('members.csv');
+        $filePath = public_path('cpfcmembers.csv');
 
         // Temporarily disable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
@@ -59,7 +59,7 @@ class MembersTableSeeder extends Seeder
                     'on_device' => 0, // Default value
                     'date_of_birth' => Carbon::parse($rowData['date_of_birth'])->format('Y-m-d'), // Default if not provided
                     'is_approved' => 1,
-                    'photo' => 'storage/members/' . $rowData['id'] . '.jpg',
+                    'photo' => $rowData['photo'], // Assuming photo is optional
                     'emergency_person_name' => $rowData['father_name'],
                     'remarks' => $rowData['remarks'],
                 ];

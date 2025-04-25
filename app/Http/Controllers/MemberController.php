@@ -431,7 +431,7 @@ class MemberController extends Controller
         $member->delete();
 
         try {
-            (new AccessControlService())->deleteUser('MEM' . $id);
+            (new AccessControlService())->deleteUser('' . $id);
         } catch (Exception $e) {
             Log::error("Failed to delete user $id from device: " . $e->getMessage());
         } finally {
@@ -478,7 +478,7 @@ class MemberController extends Controller
             $member->save();
 
             $accessControlService = new AccessControlService();
-            $accessControlService->deleteUser('MEM' . $member->id);
+            $accessControlService->deleteUser($member->id);
             $accessControlService->putMember($member->id);
 
             DB::commit();

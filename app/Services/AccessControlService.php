@@ -105,36 +105,38 @@ class AccessControlService
                     return response()->json(['message' => 'Request failed.', 'error' => $e->getMessage()], 500);
                 }
             } else {
-                $url = "http://" . $device->ip_address . ":" . $device->port . "/ISAPI/Intelligent/FDLib/FaceDataRecord?format=json";
+                $url = "http://{$device->ip_address}:{$device->port}/ISAPI/Intelligent/FDLib/FaceDataRecord?format=json";
 
                 // Prepare the face data record
                 $faceDataRecord = json_encode([
                     "FaceLibType" => "blackFD",
                     "FDID" => "1",
-                    "FPID" => $id
+                    "FPID" => "" . $id
                 ]);
 
-                try {
-                    $client->request('POST', $url, [
-                        'auth' => [$device->username, $device->password, 'digest'],
-                        'multipart' => [
-                            [
-                                'name' => 'facedatarecord',
-                                'contents' => $faceDataRecord,
-                                'headers' => [
-                                    'Content-Type' => 'application/json'
-                                ]
-                            ],
-                            [
-                                'name' => 'faceimage',
-                                'contents' => $imagePath,
-                                'filename' => 'face_image.jpg',
-                                'headers' => [
-                                    'Content-Type' => 'image/jpeg'
-                                ]
+                $preparedJson = [
+                    'auth' => [$device->username, $device->password, 'digest'],
+                    'multipart' => [
+                        [
+                            'name' => 'facedatarecord',
+                            'contents' => $faceDataRecord,
+                            'headers' => [
+                                'Content-Type' => 'application/json'
+                            ]
+                        ],
+                        [
+                            'name' => 'faceimage',
+                            'contents' => $imagePath,
+                            'filename' => 'face_image.jpg',
+                            'headers' => [
+                                'Content-Type' => 'image/jpeg'
                             ]
                         ]
-                    ]);
+                    ]
+                ];
+
+                try {
+                    $client->request('POST', $url, $preparedJson);
                 } catch (RequestException $e) {
                     Log::error("Failed to upload photo for user $id on device {$device->name}: " . $e);
                     return response()->json(['message' => 'Request failed.', 'error' => $e->getMessage()], 500);
@@ -245,16 +247,22 @@ class AccessControlService
     public static function openDoor(AccessControl $device)
     {
         if ($device->type == 'isup') {
-            // 
             $url = "http://{$device->ip_address}:{$device->port}/ISAPI/AccessControl/RemoteControl/door/1?format=json&devIndex={$device->uuid}";
+
+            $payload = json_encode([
+                "RemoteControlDoor" => [
+                    "cmd" => "open"
+                ]
+            ]);
         } else {
             $url = "http://{$device->ip_address}:{$device->port}/ISAPI/AccessControl/RemoteControl/door/1";
+
+            $payload = "
+        <RemoteControlDoor>
+            <cmd>open</cmd>
+            <doorNo>1</doorNo>
+        </RemoteControlDoor>";
         }
-        $payload = json_encode([
-            "RemoteControlDoor" => [
-                "cmd" => "open"
-            ]
-        ]);
 
         try {
             $response = Http::withDigestAuth($device->username, $device->password)

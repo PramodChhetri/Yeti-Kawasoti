@@ -7,7 +7,7 @@ return [
     'access_control_username' => env('ACCESS_CONTROL_USERNAME', ''),
     'access_control_password' => env('ACCESS_CONTROL_PASSWORD', ''),
 
-    'gym_name' => env('GYM_NAME', 'Yeti - Kawasoti'),
+    'gym_name' => env('GYM_NAME', 'CPFC - Bharatpur'),
 
     /*
     |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Yeti - Kawasoti'),
+    'name' => env('APP_NAME', 'CPFC - Bharatpur'),
 
     /*
     |--------------------------------------------------------------------------

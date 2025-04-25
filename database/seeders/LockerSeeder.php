@@ -13,10 +13,16 @@ class LockerSeeder extends Seeder
     public function run(): void
     {
         Locker::insert([
-            ["months" => 1, 'price' => 300],
-            ["months" => 3, 'price' => 800],
+            ["months" => 3, 'price' => 500],
+            ["months" => 6, 'price' => 1000],
+            ["months" => 12, 'price' => 2000],
+            ["months" => 3, 'price' => 625],
+            ["months" => 6, 'price' => 1250],
+            ["months" => 12, 'price' => 2500],
+            ["months" => 3, 'price' => 750],
             ["months" => 6, 'price' => 1500],
-            ["months" => 12, 'price' => 3000]
+            ["months" => 12, 'price' => 3000],
+            ["months" => 12, 'price' => 4000],
         ]);
     }
 }

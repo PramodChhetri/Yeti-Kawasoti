@@ -21,9 +21,9 @@ class UsersTableSeeder extends Seeder
                 'email_verified_at' => now()
             ],
             [
-                'name' => 'Yeti Admin',
-                'email' => 'yetikawasoti@gmail.com',
-                'password' => Hash::make('yetifitness'),
+                'name' => 'CPFC Admin',
+                'email' => 'cpfcbharatpur@gmail.com',
+                'password' => Hash::make('cpfcbharatpur'),
                 'email_verified_at' => now()
             ],
         ]);
