@@ -50,6 +50,7 @@ export interface Official {
     name: string;
     phone: string;
     photo: string;
+    dob: string;
     gender: string;
     joining_date: string;
     is_active: boolean;

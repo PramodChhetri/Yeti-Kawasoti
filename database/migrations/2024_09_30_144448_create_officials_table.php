@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('is_active');
             $table->string('photo');
             $table->date('joining_date')->nullable();
+            $table->date('dob');
             $table->string('position');
             $table->timestamps();
         });

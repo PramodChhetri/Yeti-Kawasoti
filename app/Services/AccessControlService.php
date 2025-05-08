@@ -201,7 +201,7 @@ class AccessControlService
 
 
         $this->putUser(
-            $member->id,
+            "MEM" . $member->id,
             $member->name,
             $member->gender,
             $member->start_date,
@@ -210,7 +210,7 @@ class AccessControlService
         );
 
         if ($member->photo) {
-            $this->putPhoto($member->id, $member->plain_image, $devices);
+            $this->putPhoto("MEM" . $member->id, $member->plain_image, $devices);
         }
     }
 
@@ -230,7 +230,7 @@ class AccessControlService
         $contract_expiry_date = Carbon::parse($staff->joining_date)->addDecade();
 
         $this->putUser(
-            $staff->id,
+            "STF" . $staff->id,
             $staff->name,
             $staff->gender,
             $staff->joining_date,
@@ -239,7 +239,7 @@ class AccessControlService
         );
 
         if ($staff->photo) {
-            $this->putPhoto($staff->id, $staff->photo, $devices);
+            $this->putPhoto("STF" . $staff->id, $staff->photo, $devices);
         }
     }
 

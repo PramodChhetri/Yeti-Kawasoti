@@ -1,9 +1,21 @@
 import InputError from "@/Components/InputError";
 import { Button } from "@/Components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/Components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/Components/ui/dialog";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select";
 import { toast } from "@/Components/ui/use-toast";
 import { Member } from "@/types/members";
 import { useForm, usePage } from "@inertiajs/react";
@@ -15,13 +27,21 @@ interface Locker {
     price: number;
 }
 
-export function ExtendLocker({ member, open, onClose }: { member: Member; open: boolean; onClose: () => void }) {
+export function ExtendLocker({
+    member,
+    open,
+    onClose,
+}: {
+    member: Member;
+    open: boolean;
+    onClose: () => void;
+}) {
     const { put, data, setData, errors, setError } = useForm({
-        locker_id: '', // Locker ID from the dropdown
-        bill_number: '', // Bill number
-        locker_discount: '', // Discount entered
-        paid_amount: '', // Amount paid by the member
-        payment_mode: 'Cash', // Default payment mode
+        locker_id: "", // Locker ID from the dropdown
+        bill_number: "", // Bill number
+        locker_discount: "", // Discount entered
+        paid_amount: "", // Amount paid by the member
+        payment_mode: "Cash", // Default payment mode
     });
 
     const lockers = usePage().props.lockers as Locker[]; // Assuming lockers are passed from backend
@@ -33,11 +53,14 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
     // Set selected locker and calculate total based on locker_id
     useEffect(() => {
         if (data.locker_id) {
-            const selected = lockers.find((locker) => locker.id.toString() === data.locker_id) || null;
+            const selected =
+                lockers.find(
+                    (locker) => locker.id.toString() === data.locker_id
+                ) || null;
             setSelectedLocker(selected);
 
             if (selected) {
-                setData('paid_amount', selected.price.toString()); // Set paid amount to locker price by default
+                setData("paid_amount", selected.price.toString()); // Set paid amount to locker price by default
                 setTotalAmount(selected.price); // Set total amount based on locker price
             }
         }
@@ -48,7 +71,7 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
         if (selectedLocker && data.locker_discount) {
             const discount = Number(data.locker_discount);
             if (discount > selectedLocker.price) {
-                setDiscountError('Discount cannot exceed the locker price.');
+                setDiscountError("Discount cannot exceed the locker price.");
             } else {
                 setDiscountError(null);
                 const newTotal = selectedLocker.price - discount;
@@ -61,9 +84,9 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
 
     const submit = async (e: FormEvent) => {
         e.preventDefault();
-        setError('bill_number', '');
+        setError("bill_number", "");
         if (!data.bill_number) {
-            return setError('bill_number', 'Bill number is required.');
+            return setError("bill_number", "Bill number is required.");
         }
 
         if (discountError) return; // Prevent submission if discount error exists
@@ -74,7 +97,7 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
                 onClose();
                 toast({
                     description: `Locker assigned to ${member.name} has been extended successfully`,
-                    dir: 'left'
+                    dir: "left",
                 });
             },
         });
@@ -82,16 +105,15 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
 
     const calculateOutstandingOrAdvance = () => {
         if (balance < 0) {
-            return { label: 'Outstanding Amount', amount: Math.abs(balance) };
+            return { label: "Outstanding Amount", amount: Math.abs(balance) };
         } else if (balance > 0) {
-            return { label: 'Advance Amount', amount: balance };
+            return { label: "Advance Amount", amount: balance };
         } else {
             return null; // Fully paid, no balance
         }
     };
 
     const paymentSummary = calculateOutstandingOrAdvance();
-
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -105,14 +127,21 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
                 <form onSubmit={submit}>
                     <div>
                         <Label>Choose Locker Duration</Label>
-                        <Select onValueChange={(val) => setData('locker_id', val)} value={data.locker_id}>
+                        <Select
+                            onValueChange={(val) => setData("locker_id", val)}
+                            value={data.locker_id}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select Locker Duration" />
                             </SelectTrigger>
                             <SelectContent>
                                 {lockers.map((locker) => (
-                                    <SelectItem key={locker.id} value={locker.id.toString()}>
-                                        {locker.months} Months - Rs. {locker.price}
+                                    <SelectItem
+                                        key={locker.id}
+                                        value={locker.id.toString()}
+                                    >
+                                        {locker.months} Months - Rs.{" "}
+                                        {locker.price}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -122,37 +151,58 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
                     <div className="mt-4 grid grid-cols-2 gap-4">
                         <div>
                             <Label>Payment Mode</Label>
-                            <Select defaultValue="Cash" onValueChange={(value) => setData('payment_mode', value)} value={data.payment_mode}>
+                            <Select
+                                defaultValue="Cash"
+                                onValueChange={(value) =>
+                                    setData("payment_mode", value)
+                                }
+                                value={data.payment_mode}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select Payment Mode" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Cash">Cash</SelectItem>
                                     <SelectItem value="QR">QR</SelectItem>
-                                    <SelectItem value="Cash + QR">Cash + QR</SelectItem>
+                                    <SelectItem value="Cash + QR">
+                                        Cash + QR
+                                    </SelectItem>
                                     <SelectItem value="Free">Free</SelectItem>
-                                    <SelectItem value="Cheque">Cheque</SelectItem>
+                                    <SelectItem value="Cheque">
+                                        Cheque
+                                    </SelectItem>
+                                    <SelectItem value="Credit">
+                                        Credit
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div>
                             <Label>Bill Number</Label>
                             <Input
-                                onChange={(e) => setData('bill_number', e.target.value)}
+                                onChange={(e) =>
+                                    setData("bill_number", e.target.value)
+                                }
                                 placeholder="Enter bill number"
                                 required
                             />
-                            {errors.bill_number && <InputError message={errors.bill_number} />}
+                            {errors.bill_number && (
+                                <InputError message={errors.bill_number} />
+                            )}
                         </div>
 
                         <div>
                             <Label>Discount</Label>
                             <Input
                                 type="number"
-                                onChange={(e) => setData('locker_discount', e.target.value)}
+                                onChange={(e) =>
+                                    setData("locker_discount", e.target.value)
+                                }
                                 placeholder="Enter discount (if any)"
                             />
-                            {discountError && <InputError message={discountError} />}
+                            {discountError && (
+                                <InputError message={discountError} />
+                            )}
                         </div>
 
                         <div>
@@ -160,7 +210,9 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
                             <Input
                                 type="number"
                                 value={data.paid_amount}
-                                onChange={(e) => setData('paid_amount', e.target.value)}
+                                onChange={(e) =>
+                                    setData("paid_amount", e.target.value)
+                                }
                                 placeholder="Enter paid amount"
                                 required
                             />
@@ -169,9 +221,12 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
 
                     {selectedLocker && (
                         <div className="mt-4 p-4 bg-muted rounded-lg">
-                            <h3 className="text-lg font-medium">Payment Summary</h3>
+                            <h3 className="text-lg font-medium">
+                                Payment Summary
+                            </h3>
                             <p>
-                                <b>Locker Duration:</b> {selectedLocker.months} months
+                                <b>Locker Duration:</b> {selectedLocker.months}{" "}
+                                months
                             </p>
                             <p>
                                 <b>Price:</b> Rs. {selectedLocker.price}
@@ -184,14 +239,22 @@ export function ExtendLocker({ member, open, onClose }: { member: Member; open: 
                             </p>
                             {paymentSummary && (
                                 <p>
-                                    <b>{paymentSummary.label}:</b> Rs {paymentSummary.amount}
+                                    <b>{paymentSummary.label}:</b> Rs{" "}
+                                    {paymentSummary.amount}
                                 </p>
                             )}
                         </div>
                     )}
 
                     <div className="mt-6 flex justify-end">
-                        <Button type="submit" disabled={!!discountError || !data.bill_number || !selectedLocker}>
+                        <Button
+                            type="submit"
+                            disabled={
+                                !!discountError ||
+                                !data.bill_number ||
+                                !selectedLocker
+                            }
+                        >
                             Extend Locker
                         </Button>
                     </div>

@@ -1,8 +1,21 @@
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/Components/ui/sheet";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select";
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+} from "@/Components/ui/sheet";
 import { toast } from "@/Components/ui/use-toast";
 import { capitalizeWords } from "@/lib/utils";
 import { Official } from "@/types";
@@ -11,7 +24,15 @@ import axios from "axios";
 import moment from "moment";
 import React, { FormEvent, useState } from "react";
 
-const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, official: Official, onClose: () => void }) => {
+const EditStaffDialog = ({
+    refetch,
+    official,
+    onClose,
+}: {
+    refetch: any;
+    official: Official;
+    onClose: () => void;
+}) => {
     const { data, setData, reset } = useForm({
         name: official.name,
         phone: official.phone,
@@ -19,9 +40,11 @@ const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, officia
         gender: official.gender,
         joining_date: moment(official.joining_date).format("YYYY-MM-DD"),
         is_active: 1,
-        position: "",
+        position: official.position,
+        dob: official.dob,
     });
 
+    console.log(official);
     const [processing, setProcessing] = useState(false);
 
     const submit = (e: FormEvent) => {
@@ -29,18 +52,19 @@ const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, officia
 
         setProcessing(true);
 
-        axios.post(`/staffs/${official.id}`, data, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        })
-            .then(response => {
+        axios
+            .post(`/staffs/${official.id}`, data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+            .then((response) => {
                 toast({ description: "Staff updated successfully" });
                 reset();
                 refetch();
                 onClose(); // Close dialog
             })
-            .catch(error => {
+            .catch((error) => {
                 toast({ description: "Failed to update staff" });
             })
             .finally(() => {
@@ -53,7 +77,9 @@ const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, officia
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>Edit Staff</SheetTitle>
-                    <SheetDescription>Customize the staff as per your choice</SheetDescription>
+                    <SheetDescription>
+                        Customize the staff as per your choice
+                    </SheetDescription>
                 </SheetHeader>
                 <form className="space-y-2" onSubmit={submit}>
                     <div>
@@ -62,7 +88,9 @@ const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, officia
                             type="text"
                             id="name"
                             value={data.name}
-                            onChange={e => setData("name", capitalizeWords(e.target.value))}
+                            onChange={(e) =>
+                                setData("name", capitalizeWords(e.target.value))
+                            }
                         />
                     </div>
                     <div>
@@ -71,7 +99,7 @@ const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, officia
                             type="tel"
                             id="phone"
                             value={data.phone}
-                            onChange={e => setData("phone", e.target.value)}
+                            onChange={(e) => setData("phone", e.target.value)}
                             maxLength={10}
                             minLength={10}
                         />
@@ -87,11 +115,10 @@ const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, officia
                             type="file"
                             id="photo"
                             accept="image/*"
-                            onChange={e => {
+                            onChange={(e) => {
                                 if (e.target.files?.length)
                                     setData("photo", e.target.files[0]);
-                                else
-                                    setData("photo", null as unknown as File);
+                                else setData("photo", null as unknown as File);
                             }}
                         />
                     </div>
@@ -99,7 +126,7 @@ const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, officia
                         <Label htmlFor="gender">Gender</Label>
                         <Select
                             defaultValue={official.gender}
-                            onValueChange={val => setData("gender", val)}
+                            onValueChange={(val) => setData("gender", val)}
                         >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a Gender" />
@@ -107,7 +134,9 @@ const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, officia
                             <SelectContent>
                                 <SelectGroup>
                                     <SelectItem value="male">Male</SelectItem>
-                                    <SelectItem value="female">Female</SelectItem>
+                                    <SelectItem value="female">
+                                        Female
+                                    </SelectItem>
                                     <SelectItem value="other">Other</SelectItem>
                                 </SelectGroup>
                             </SelectContent>
@@ -119,27 +148,49 @@ const EditStaffDialog = ({ refetch, official, onClose }: { refetch: any, officia
                             type="date"
                             id="joining_date"
                             value={data.joining_date}
-                            onChange={e => setData("joining_date", e.target.value)}
+                            onChange={(e) =>
+                                setData("joining_date", e.target.value)
+                            }
                         />
                     </div>
                     <div>
                         <Label htmlFor="position">Position</Label>
-                        <Select onValueChange={val => setData("position", val)}>
+                        <Select
+                            defaultValue={official.position}
+                            onValueChange={(val) => setData("position", val)}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a Position" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
                                     <SelectItem value="Owner">Owner</SelectItem>
-                                    <SelectItem value="Manager">Manager</SelectItem>
-                                    <SelectItem value="Trainer">Trainer</SelectItem>
-                                    <SelectItem value="Reception">Reception</SelectItem>
+                                    <SelectItem value="Manager">
+                                        Manager
+                                    </SelectItem>
+                                    <SelectItem value="Trainer">
+                                        Trainer
+                                    </SelectItem>
+                                    <SelectItem value="Reception">
+                                        Reception
+                                    </SelectItem>
                                     <SelectItem value="Guard">Guard</SelectItem>
-                                    <SelectItem value="House-Keeping">House Keeping</SelectItem>
+                                    <SelectItem value="House-Keeping">
+                                        House Keeping
+                                    </SelectItem>
                                     <SelectItem value="other">Other</SelectItem>
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
+                    </div>
+                    <div>
+                        <Label htmlFor="dob">Date of Birth</Label>
+                        <Input
+                            type="date"
+                            id="dob"
+                            value={data.dob}
+                            onChange={(e) => setData("dob", e.target.value)}
+                        />
                     </div>
                     <div>
                         <Button type="submit" disabled={processing}>

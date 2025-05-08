@@ -53,8 +53,7 @@ export function MemberAccountsDialog({
     // Combine all types of payments into a unified array
     const ledger = Object.values(member.all_payments);
 
-    console.log("legder");
-    console.log("legder : ", ledger);
+    console.log("ledger", ledger);
 
     // Ensure that sorting considers all dates correctly
     ledger.sort((a: any, b: any) => {
@@ -230,6 +229,12 @@ export function MemberAccountsDialog({
                                         <SelectItem value="Cheque">
                                             Cheque
                                         </SelectItem>
+                                        {data.transaction_type !==
+                                            "credit-payment" && (
+                                            <SelectItem value="Credit">
+                                                Credit
+                                            </SelectItem>
+                                        )}
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.payment_mode} />
@@ -444,6 +449,13 @@ export function MemberAccountsDialog({
                                             <TableCell>
                                                 {(() => {
                                                     if (
+                                                        l.type ===
+                                                        "credit-payment"
+                                                    ) {
+                                                        return `Rs ${Number(
+                                                            l.paid_amount
+                                                        )}`;
+                                                    } else if (
                                                         Number(
                                                             l.refund_amount
                                                         ) !== 0 &&
@@ -472,13 +484,33 @@ export function MemberAccountsDialog({
                                                                 l.package_discount
                                                             )
                                                         }`;
+                                                    } else if (
+                                                        Number(
+                                                            l.extra_discount
+                                                        ) &&
+                                                        l.type === "renewal"
+                                                    ) {
+                                                        return `Rs ${
+                                                            Number(
+                                                                l.extra_discount
+                                                            ) +
+                                                            Number(l.net_amount)
+                                                        }`;
+                                                    } else if (
+                                                        Number(
+                                                            l.locker_discount
+                                                        ) &&
+                                                        l.type === "locker"
+                                                    ) {
+                                                        return `Rs ${
+                                                            Number(
+                                                                l.locker_discount
+                                                            ) +
+                                                            Number(l.net_amount)
+                                                        }`;
                                                     } else if (l.net_amount) {
                                                         return `Rs ${Number(
                                                             l.net_amount
-                                                        )}`;
-                                                    } else {
-                                                        return `Rs ${Number(
-                                                            l.paid_number
                                                         )}`;
                                                     }
                                                 })()}
@@ -489,9 +521,12 @@ export function MemberAccountsDialog({
                                                     ? `Rs ${Number(
                                                           l.extra_discount
                                                       )}`
+                                                    : l.locker_discount
+                                                    ? `Rs ${Number(
+                                                          l.locker_discount
+                                                      )}`
                                                     : "-"}
                                             </TableCell>
-                                            {/* {Net AMount} */}
                                             <TableCell>
                                                 {Number(l.refund_amount)
                                                     ? `Rs ${Number(

@@ -61,6 +61,7 @@ class OfficialController extends Controller
             'is_active' => 'required',
             'photo' => 'required|image|max:2048',
             'joining_date' => 'required|date',
+            'dob' => 'required|date',
             'position' => "required"
         ]);
 
@@ -71,6 +72,7 @@ class OfficialController extends Controller
             'is_active' => $validatedData['is_active'],
             'photo' => $validatedData['photo'],
             'joining_date' => Carbon::parse($validatedData['joining_date'])->format('Y-m-d'),
+            'dob' => Carbon::parse($validatedData['dob'])->format('Y-m-d'),
             'position' => $validatedData['position'],
         ]);
 
@@ -126,6 +128,7 @@ class OfficialController extends Controller
             'is_active' => 'required|boolean',
             'photo' => 'nullable|image|max:2048',
             'joining_date' => 'required|date',
+            'dob' => 'required|date',
             'position' => "required"
         ]);
 
@@ -135,6 +138,7 @@ class OfficialController extends Controller
         $official->gender = $validatedData['gender'];
         $official->is_active = $validatedData['is_active'];
         $official->joining_date = Carbon::parse($validatedData['joining_date'])->format('Y-m-d');
+        $official->dob = Carbon::parse($validatedData['dob'])->format('Y-m-d');
         $official->position = $validatedData['position'];
 
         // Check if a new photo is uploaded

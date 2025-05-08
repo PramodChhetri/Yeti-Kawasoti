@@ -1,16 +1,27 @@
-import { useState, useEffect, useRef } from 'react';
-import { Input } from '@/Components/ui/input';
-import { Button } from '@/Components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/Components/ui/popover';
-import { Label } from '@/Components/ui/label';
-import SegmentedControl from '@/Components/ui/segmented-control';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
-import { MembershipPackage } from '@/types';
-import { Filter } from 'lucide-react';
-import { router, usePage } from '@inertiajs/react';
+import { useState, useEffect, useRef } from "react";
+import { Input } from "@/Components/ui/input";
+import { Button } from "@/Components/ui/button";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/Components/ui/popover";
+import { Label } from "@/Components/ui/label";
+import SegmentedControl from "@/Components/ui/segmented-control";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select";
+import { MembershipPackage } from "@/types";
+import { Filter } from "lucide-react";
+import { router, usePage } from "@inertiajs/react";
 
 interface FilterPopoverProps {
     packages: MembershipPackage[];
+    recipientType?: string;
     initialFilters?: {
         membership_package_id?: string;
         gender?: string;
@@ -20,10 +31,8 @@ interface FilterPopoverProps {
     };
 }
 
-
-
 function parseFiltersFromUrl(url: string) {
-    const urlParams = new URLSearchParams(url.split('?')[1]);
+    const urlParams = new URLSearchParams(url.split("?")[1]);
     const filters: any = {};
 
     // Helper function to set nested properties
@@ -40,7 +49,7 @@ function parseFiltersFromUrl(url: string) {
 
     // Extract filters from URL params
     for (const [key, value] of urlParams.entries()) {
-        if (key.startsWith('filter[')) {
+        if (key.startsWith("filter[")) {
             // Extract the inner key from the URL parameter
             const match = key.match(/filter\[(.+?)\]/);
             if (match && match[1]) {
@@ -58,21 +67,23 @@ function parseFiltersFromUrl(url: string) {
     return filters;
 }
 
-
-export default function FilterPopover({ packages }: FilterPopoverProps) {
+export default function FilterPopover({
+    packages,
+    recipientType = "members",
+}: FilterPopoverProps) {
     const currentUrl = usePage().url;
     const initialFilters = parseFiltersFromUrl(currentUrl);
     const [filters, setFilters] = useState({
-        membership_package_id: initialFilters.membership_package_id || 'all',
-        gender: initialFilters.gender || 'all',
-        status: initialFilters.status || 'all',
+        membership_package_id: initialFilters.membership_package_id || "all",
+        gender: initialFilters.gender || "all",
+        status: initialFilters.status || "all",
         joiningDateRange: {
-            start: initialFilters.joiningDateRange?.start || '',
-            end: initialFilters.joiningDateRange?.end || '',
+            start: initialFilters.joiningDateRange?.start || "",
+            end: initialFilters.joiningDateRange?.end || "",
         },
         expiryDateRange: {
-            start: initialFilters.expiryDateRange?.start || '',
-            end: initialFilters.expiryDateRange?.end || '',
+            start: initialFilters.expiryDateRange?.start || "",
+            end: initialFilters.expiryDateRange?.end || "",
         },
     });
 
@@ -86,7 +97,9 @@ export default function FilterPopover({ packages }: FilterPopoverProps) {
         setSelectedStatus(filters.status);
     }, [filters.gender, filters.status]);
 
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleFilterChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
         const { name, value } = e.target;
         setFilters((prev) => ({
             ...prev,
@@ -96,58 +109,132 @@ export default function FilterPopover({ packages }: FilterPopoverProps) {
 
     const applyFilters = () => {
         const urlParams = new URLSearchParams();
-        if (filters.membership_package_id !== 'all') urlParams.append('filter[membership_package_id]', filters.membership_package_id);
-        if (filters.gender !== 'all') urlParams.append('filter[gender]', filters.gender);
-        if (filters.status !== 'all') urlParams.append('filter[status]', filters.status);
 
-        if (filters.joiningDateRange.start) urlParams.append('filter[start_date][start]', filters.joiningDateRange.start);
-        if (filters.joiningDateRange.end) urlParams.append('filter[start_date][end]', filters.joiningDateRange.end);
+        // Add recipient type as a query parameter, not a filter
+        if (recipientType) {
+            urlParams.append("recipient_type", recipientType);
+        }
 
-        if (filters.expiryDateRange.start) urlParams.append('filter[payment_expiry_date][start]', filters.expiryDateRange.start);
-        if (filters.expiryDateRange.end) urlParams.append('filter[payment_expiry_date][end]', filters.expiryDateRange.end);
+        // Make sure auto_load is false when applying filters
+        urlParams.append("auto_load", "false");
 
+        // Add all filter parameters
+        if (filters.membership_package_id !== "all")
+            urlParams.append(
+                "filter[membership_package_id]",
+                filters.membership_package_id
+            );
+        if (filters.gender !== "all")
+            urlParams.append("filter[gender]", filters.gender);
+        if (filters.status !== "all")
+            urlParams.append("filter[status]", filters.status);
+
+        if (filters.joiningDateRange.start)
+            urlParams.append(
+                "filter[start_date][start]",
+                filters.joiningDateRange.start
+            );
+        if (filters.joiningDateRange.end)
+            urlParams.append(
+                "filter[start_date][end]",
+                filters.joiningDateRange.end
+            );
+
+        if (filters.expiryDateRange.start)
+            urlParams.append(
+                "filter[payment_expiry_date][start]",
+                filters.expiryDateRange.start
+            );
+        if (filters.expiryDateRange.end)
+            urlParams.append(
+                "filter[payment_expiry_date][end]",
+                filters.expiryDateRange.end
+            );
+
+        // Keep existing query parameters for 'both' mode
+        if (recipientType === "both") {
+            // When in 'both' mode, preserve any existing filter parameters from the other filter component
+            const currentParams = new URLSearchParams(window.location.search);
+
+            // Add official filters that don't conflict with member filters
+            for (const [key, value] of currentParams.entries()) {
+                if (
+                    key.startsWith("filter[") &&
+                    !key.startsWith("filter[gender]") &&
+                    !key.startsWith("filter[status]") &&
+                    !key.startsWith("filter[membership_package_id]") &&
+                    !key.startsWith("filter[start_date]") &&
+                    !key.startsWith("filter[payment_expiry_date]")
+                ) {
+                    urlParams.append(key, value);
+                }
+            }
+        }
+
+        console.log(
+            "Applying member filters with params:",
+            Object.fromEntries(urlParams.entries())
+        );
         const url = `/messenging?${urlParams.toString()}`;
         router.visit(url);
     };
 
     const clearFilters = () => {
         setFilters({
-            membership_package_id: 'all',
-            gender: 'all',
-            status: 'all',
-            joiningDateRange: { start: '', end: '' },
-            expiryDateRange: { start: '', end: '' },
+            membership_package_id: "all",
+            gender: "all",
+            status: "all",
+            joiningDateRange: { start: "", end: "" },
+            expiryDateRange: { start: "", end: "" },
         });
-        setSelectedGender('all');
-        setSelectedStatus('all');
+        setSelectedGender("all");
+        setSelectedStatus("all");
+    };
+
+    const getButtonLabel = () => {
+        return recipientType === "both" ? "Filter Members" : "Filter";
     };
 
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="secondary" className='border'>
-                    <Filter size={14} /> &nbsp; Filter
+                <Button variant="secondary" className="border">
+                    <Filter size={14} /> &nbsp; {getButtonLabel()}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="p-4 space-y-4 w-fit max-w-full overflow-auto">
-                <h3 className='font-bold text-lg'>Filter Members</h3>
+                <h3 className="font-bold text-lg">Filter Members</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <Label>Gender</Label>
                         <SegmentedControl
-                            items={[{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }, { label: 'All', value: 'all' }]}
+                            items={[
+                                { label: "Male", value: "male" },
+                                { label: "Female", value: "female" },
+                                { label: "All", value: "all" },
+                            ]}
                             value={selectedGender}
                             onChange={(value) => {
                                 setSelectedGender(value);
-                                setFilters((prev) => ({ ...prev, gender: value }));
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    gender: value,
+                                }));
                             }}
                         />
                     </div>
                     <div>
-                        <Label htmlFor="membership-package">Membership Package</Label>
+                        <Label htmlFor="membership-package">
+                            Membership Package
+                        </Label>
                         <Select
                             value={filters.membership_package_id}
-                            onValueChange={(value) => setFilters((prev) => ({ ...prev, membership_package_id: value }))}
+                            onValueChange={(value) =>
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    membership_package_id: value,
+                                }))
+                            }
                         >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select membership package" />
@@ -155,14 +242,19 @@ export default function FilterPopover({ packages }: FilterPopoverProps) {
                             <SelectContent>
                                 <SelectItem value="all">All</SelectItem>
                                 {packages.map((p) => (
-                                    <SelectItem key={p.id} value={p.id.toString()}>{p.package_name}</SelectItem>
+                                    <SelectItem
+                                        key={p.id}
+                                        value={p.id.toString()}
+                                    >
+                                        {p.package_name}
+                                    </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className='col-span-full'>
+                    <div className="col-span-full">
                         <Label>Joining Date Range</Label>
-                        <div className='flex gap-2 items-center'>
+                        <div className="flex gap-2 items-center">
                             <Input
                                 type="date"
                                 name="joining_start_date"
@@ -170,7 +262,10 @@ export default function FilterPopover({ packages }: FilterPopoverProps) {
                                 onChange={(e) => {
                                     setFilters((prev) => ({
                                         ...prev,
-                                        joiningDateRange: { ...prev.joiningDateRange, start: e.target.value },
+                                        joiningDateRange: {
+                                            ...prev.joiningDateRange,
+                                            start: e.target.value,
+                                        },
                                     }));
                                 }}
                                 className="w-full"
@@ -183,16 +278,19 @@ export default function FilterPopover({ packages }: FilterPopoverProps) {
                                 onChange={(e) =>
                                     setFilters((prev) => ({
                                         ...prev,
-                                        joiningDateRange: { ...prev.joiningDateRange, end: e.target.value },
+                                        joiningDateRange: {
+                                            ...prev.joiningDateRange,
+                                            end: e.target.value,
+                                        },
                                     }))
                                 }
                                 className="w-full"
                             />
                         </div>
                     </div>
-                    <div className='col-span-full'>
+                    <div className="col-span-full">
                         <Label>Payment Expiry Date Range</Label>
-                        <div className='flex gap-2 items-center'>
+                        <div className="flex gap-2 items-center">
                             <Input
                                 type="date"
                                 name="expiry_start_date"
@@ -200,7 +298,10 @@ export default function FilterPopover({ packages }: FilterPopoverProps) {
                                 onChange={(e) =>
                                     setFilters((prev) => ({
                                         ...prev,
-                                        expiryDateRange: { ...prev.expiryDateRange, start: e.target.value },
+                                        expiryDateRange: {
+                                            ...prev.expiryDateRange,
+                                            start: e.target.value,
+                                        },
                                     }))
                                 }
                                 className="w-full"
@@ -213,28 +314,43 @@ export default function FilterPopover({ packages }: FilterPopoverProps) {
                                 onChange={(e) =>
                                     setFilters((prev) => ({
                                         ...prev,
-                                        expiryDateRange: { ...prev.expiryDateRange, end: e.target.value },
+                                        expiryDateRange: {
+                                            ...prev.expiryDateRange,
+                                            end: e.target.value,
+                                        },
                                     }))
                                 }
                                 className="w-full"
                             />
                         </div>
                     </div>
-                    <div className='col-span-full'>
+                    <div className="col-span-full">
                         <Label>Status</Label>
                         <SegmentedControl
-                            items={[{ label: 'Active', value: 'active' }, { label: 'Expired', value: 'expired' }, { label: 'Unapproved', value: 'unapproved' }, { label: 'All', value: 'all' }]}
+                            items={[
+                                { label: "Active", value: "active" },
+                                { label: "Expired", value: "expired" },
+                                { label: "Unapproved", value: "unapproved" },
+                                { label: "All", value: "all" },
+                            ]}
                             value={selectedStatus}
                             onChange={(value) => {
                                 setSelectedStatus(value);
-                                setFilters((prev) => ({ ...prev, status: value }));
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    status: value,
+                                }));
                             }}
                         />
                     </div>
                 </div>
                 <div className="flex justify-end space-x-2 mt-4">
-                    <Button variant="outline" onClick={clearFilters}>Clear</Button>
-                    <Button onClick={applyFilters} ref={buttonRef}>Apply</Button>
+                    <Button variant="outline" onClick={clearFilters}>
+                        Clear
+                    </Button>
+                    <Button onClick={applyFilters} ref={buttonRef}>
+                        Apply
+                    </Button>
                 </div>
             </PopoverContent>
         </Popover>

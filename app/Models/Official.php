@@ -15,6 +15,7 @@ class Official extends Model
         'is_active',
         'photo',
         'joining_date',
+        'dob',
         'position',
         'status'
     ];
