@@ -1,0 +1,1 @@
+import{j as t}from"./app-CeHawWK7.js";import{C as r}from"./card-m7sUhe83.js";import{G as s}from"./GlobalLayout-Cfd5osqe.js";function f({children:e}){return t.jsx(s,{children:t.jsx(r,{className:"flex h-screen overflow-auto flex-col sm:justify-center items-center pt-6 sm:pt-0",children:e})})}export{f as G};

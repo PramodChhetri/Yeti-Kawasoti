@@ -35,6 +35,27 @@ const index = ({
     const [totalDisplayCharacters, setTotalDisplayCharacters] = useState(160);
     const [isLoadingContacts, setIsLoadingContacts] = useState(false);
 
+    // Calculate total pages whenever message or contacts change
+    useEffect(() => {
+        const totalCharacters = data.message.length;
+        const newTotalPages = Math.max(Math.ceil(totalCharacters / 160), 1);
+
+        // Get valid contacts count
+        const validContactsCount = Array.isArray(data.contacts)
+            ? data.contacts.filter((c) => c && c.trim() !== "").length
+            : 0;
+
+        console.log("Recalculating pages:", {
+            messageLength: totalCharacters,
+            validContactsCount,
+            newTotalPages,
+            contacts: data.contacts,
+        });
+
+        setTotalPages(newTotalPages);
+        setTotalDisplayCharacters(newTotalPages * 160);
+    }, [data.message, data.contacts]);
+
     // Extract filter values from props to pass to FilterDialog
     const initialFilters = Object.keys(otherProps)
         .filter(
@@ -62,9 +83,38 @@ const index = ({
 
     // Update contacts when they change from props
     useEffect(() => {
-        if (contacts && contacts.length > 0) {
-            console.log("Received contacts:", contacts);
-            setData("contacts", contacts);
+        console.log("Contacts prop received:", contacts);
+        if (contacts) {
+            let contactsArray: string[] = [];
+
+            // Handle different data structures
+            if (Array.isArray(contacts)) {
+                contactsArray = contacts;
+            } else if (typeof contacts === "object") {
+                // Convert object to array and ensure proper format
+                contactsArray = Object.values(contacts)
+                    .filter(
+                        (contact): contact is string =>
+                            typeof contact === "string" && contact.trim() !== ""
+                    )
+                    .map((contact) => contact.trim());
+            }
+
+            // Remove duplicates while maintaining order
+            const validContacts = contactsArray.filter(
+                (contact, index, self) => self.indexOf(contact) === index
+            );
+
+            console.log("Processed contacts:", {
+                original: contacts,
+                processed: validContacts,
+                count: validContacts.length,
+            });
+
+            setData("contacts", validContacts);
+        } else {
+            console.log("No contacts received, setting empty array");
+            setData("contacts", []);
         }
     }, [contacts]);
 
@@ -78,17 +128,15 @@ const index = ({
     // Debug log for data changes
     useEffect(() => {
         console.log("Form data updated:", data);
+        console.log("Current contacts:", data.contacts);
     }, [data]);
 
     const handleMessageChange = (message: string) => {
-        const totalCharacters = message.length;
-        const totalPages = Math.max(Math.ceil(totalCharacters / 160), 1);
-        setTotalPages(totalPages);
-        setTotalDisplayCharacters(totalPages * 160);
+        setData("message", message);
     };
 
     const handleSubmit = (e: FormEvent) => {
-        e.preventDefault(); // Prevent default form submission behavior
+        e.preventDefault();
 
         // Validate data before submission
         if (!data.contacts.length || !data.message.trim()) {
@@ -100,19 +148,21 @@ const index = ({
             return;
         }
 
+        console.log("Submitting with contacts:", data.contacts);
+
         // Proceed with submission
         post("/send-message", {
             onSuccess: () => {
-                // Clear the form fields upon successful submission
                 toast({
                     title: "Success",
                     description: "Message sent successfully",
                 });
                 reset();
-                setTotalPages(1); // Reset total pages
-                setTotalDisplayCharacters(160); // Reset display characters
+                setTotalPages(1);
+                setTotalDisplayCharacters(160);
             },
             onError: (errors) => {
+                console.error("Error submitting:", errors);
                 toast({
                     title: "Error",
                     description:
@@ -126,9 +176,33 @@ const index = ({
 
     // Helper to generate the contacts display value
     const getContactsDisplayValue = () => {
-        return Array.isArray(data.contacts) && data.contacts.length > 0
-            ? data.contacts.join(", ")
-            : "";
+        if (!data.contacts) {
+            console.log("Contacts is undefined");
+            return "";
+        }
+
+        let contactsArray: string[] = [];
+
+        // Handle different data structures
+        if (Array.isArray(data.contacts)) {
+            contactsArray = data.contacts;
+        } else if (typeof data.contacts === "object") {
+            // Convert object to array and ensure proper format
+            contactsArray = Object.values(data.contacts)
+                .filter(
+                    (contact): contact is string =>
+                        typeof contact === "string" && contact.trim() !== ""
+                )
+                .map((contact) => contact.trim());
+        }
+
+        // Remove duplicates while maintaining order
+        const validContacts = contactsArray.filter(
+            (contact, index, self) => self.indexOf(contact) === index
+        );
+
+        console.log("Valid contacts for display:", validContacts);
+        return validContacts.join(", ");
     };
 
     return (
@@ -161,16 +235,16 @@ const index = ({
                         id="contacts"
                         required
                         value={getContactsDisplayValue()}
-                        onChange={(e) =>
-                            setData(
-                                "contacts",
-                                e.target.value
-                                    ? e.target.value
-                                          .split(",")
-                                          .map((c) => c.trim())
-                                    : []
-                            )
-                        }
+                        onChange={(e) => {
+                            const newContacts = e.target.value
+                                ? e.target.value
+                                      .split(",")
+                                      .map((c) => c.trim())
+                                      .filter((c) => c !== "")
+                                : [];
+                            console.log("Setting new contacts:", newContacts);
+                            setData("contacts", newContacts);
+                        }}
                         placeholder="Comma Separated contact numbers"
                         disabled={isLoadingContacts}
                     />
@@ -178,9 +252,16 @@ const index = ({
                     <div className="flex justify-between text-muted-foreground text-sm mt-1">
                         <div>
                             {Array.isArray(data.contacts) && (
-                                <span>
-                                    {data.contacts.length} contact(s) selected
-                                </span>
+                                <>
+                                    <span>
+                                        Total contacts:{" "}
+                                        {
+                                            data.contacts.filter(
+                                                (c) => c && c.trim() !== ""
+                                            ).length
+                                        }
+                                    </span>
+                                </>
                             )}
                         </div>
                         {isLoadingContacts && <span>Loading contacts...</span>}
@@ -194,7 +275,6 @@ const index = ({
                         value={data.message}
                         onChange={(e) => {
                             setData("message", e.target.value);
-                            handleMessageChange(e.target.value);
                         }}
                         placeholder="Enter message to the recipients"
                     />
@@ -205,7 +285,9 @@ const index = ({
                             {(
                                 totalPages *
                                 (Array.isArray(data.contacts)
-                                    ? data.contacts.length
+                                    ? data.contacts.filter(
+                                          (c) => c && c.trim() !== ""
+                                      ).length
                                     : 0) *
                                 1.4
                             ).toFixed(2)}

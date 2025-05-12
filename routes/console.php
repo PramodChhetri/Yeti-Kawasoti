@@ -10,5 +10,5 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('app:check-payment-expiry')->dailyAt("06:00")->timezone('Asia/Kathmandu');
-//Schedule::command('app:send-birthday-message')->dailyAt("15:02")->timezone('Asia/Kathmandu');
+Schedule::command('app:send-birthday-message')->dailyAt("06:00")->timezone('Asia/Kathmandu');
 Schedule::command('queue:work --stop-when-empty')->everyMinute();

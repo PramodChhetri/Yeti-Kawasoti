@@ -24,7 +24,7 @@ class MessageController extends Controller
             // Get SMS balance and membership packages for display
             $balance = MessageService::getBalance();
             $packages = MembershipPackage::all();
-            $recipientType = $request->get('recipient_type', 'members');
+            $recipientType = $request->get('recipient_type', 'none');
             $contacts = [];
 
             // Fetch contacts based on recipient type
@@ -94,27 +94,50 @@ class MessageController extends Controller
             }
 
             if ($request->has('member_status') && $request->member_status !== 'all') {
-                $memberQuery->where('status', $request->member_status);
+                $status = strtolower($request->member_status);
+                if ($status === 'active') {
+                    $memberQuery->where(function ($q) {
+                        $q->where('is_approved', true)
+                            ->where('payment_expiry_date', '>', now());
+                    });
+                } elseif ($status === 'expired') {
+                    $memberQuery->where(function ($q) {
+                        $q->where('end_date', '<', now())
+                            ->orWhere('payment_expiry_date', '<=', now());
+                    });
+                } elseif ($status === 'unapproved') {
+                    $memberQuery->where('is_approved', false);
+                }
             }
 
             if ($request->has('member_joining_date_start')) {
-                $memberQuery->whereDate('joining_date', '>=', $request->member_joining_date_start);
+                $memberQuery->whereDate('start_date', '>=', $request->member_joining_date_start);
             }
 
             if ($request->has('member_joining_date_end')) {
-                $memberQuery->whereDate('joining_date', '<=', $request->member_joining_date_end);
+                $memberQuery->whereDate('start_date', '<=', $request->member_joining_date_end);
             }
 
             if ($request->has('member_expiry_date_start')) {
-                $memberQuery->whereDate('expiry_date', '>=', $request->member_expiry_date_start);
+                $memberQuery->whereDate('payment_expiry_date', '>=', $request->member_expiry_date_start);
             }
 
             if ($request->has('member_expiry_date_end')) {
-                $memberQuery->whereDate('expiry_date', '<=', $request->member_expiry_date_end);
+                $memberQuery->whereDate('payment_expiry_date', '<=', $request->member_expiry_date_end);
             }
 
-            // Get member phone numbers
-            $memberContacts = $memberQuery->pluck('phone')->toArray();
+            // Get member phone numbers and ensure they're not null or empty
+            $memberContacts = $memberQuery->pluck('phone')
+                ->filter(function ($phone) {
+                    return !empty($phone) && trim($phone) !== '';
+                })
+                ->map(function ($phone) {
+                    return trim($phone);
+                })
+                ->values()
+                ->toArray();
+
+            Log::info('Member contacts found:', ['count' => count($memberContacts), 'contacts' => $memberContacts]);
             $contacts = array_merge($contacts, $memberContacts);
         }
 
@@ -132,23 +155,34 @@ class MessageController extends Controller
             }
 
             if ($request->has('official_status') && $request->official_status !== 'all') {
-                $officialQuery->where('status', $request->official_status);
+                $status = $request->official_status;
+                if ($status === 'inactive') {
+                    $officialQuery->where('status', 'disabled');
+                } else {
+                    $officialQuery->where('status', $status);
+                }
             }
 
-            if ($request->has('official_joining_date_start')) {
-                $officialQuery->whereDate('joining_date', '>=', $request->official_joining_date_start);
-            }
+            // Get official phone numbers and ensure they're not null or empty
+            $officialContacts = $officialQuery->pluck('phone')
+                ->filter(function ($phone) {
+                    return !empty($phone) && trim($phone) !== '';
+                })
+                ->map(function ($phone) {
+                    return trim($phone);
+                })
+                ->values()
+                ->toArray();
 
-            if ($request->has('official_joining_date_end')) {
-                $officialQuery->whereDate('joining_date', '<=', $request->official_joining_date_end);
-            }
-
-            // Get official phone numbers
-            $officialContacts = $officialQuery->pluck('phone')->toArray();
+            Log::info('Official contacts found:', ['count' => count($officialContacts), 'contacts' => $officialContacts]);
             $contacts = array_merge($contacts, $officialContacts);
         }
 
-        return array_unique(array_filter($contacts));
+        // Remove duplicates and empty values, and ensure proper format
+        $uniqueContacts = array_values(array_unique(array_filter($contacts)));
+        Log::info('Final filtered contacts:', ['count' => count($uniqueContacts), 'contacts' => $uniqueContacts]);
+
+        return $uniqueContacts;
     }
 
     /**

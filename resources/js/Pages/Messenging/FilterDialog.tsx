@@ -224,12 +224,17 @@ export default function FilterDialog({
         } else if (officialEnabled) {
             params.append("recipient_type", "officials");
         } else {
-            // If neither is enabled, default to "none" to indicate no contacts should be fetched
             params.append("recipient_type", "none");
         }
 
         // Add a cache buster to ensure the page refreshes with new filter settings
         params.append("cache_buster", Date.now().toString());
+
+        // Log the parameters being sent
+        console.log(
+            "Applying filters with params:",
+            Object.fromEntries(params.entries())
+        );
 
         // Navigate with the filters
         router.get("/messenging", Object.fromEntries(params));

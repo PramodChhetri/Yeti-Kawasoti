@@ -62,10 +62,13 @@ const index = ({ auth }: PageProps) => {
                                 return (
                                     <TableRow>
                                         <TableCell>
-                                            <img
-                                                src={data.photo}
-                                                className="w-14 h-14 object-cover rounded-full border-2 border-primary p-0.5"
-                                            />
+                                            <div className="relative h-14 w-14">
+                                                <img
+                                                    src={data.photo}
+                                                    className="absolute inset-0 h-full w-full rounded-full border-2 border-primary object-cover"
+                                                    alt="Official"
+                                                />
+                                            </div>
                                         </TableCell>
                                         <TableCell>{data.id}</TableCell>
                                         <TableCell>{data.name}</TableCell>
